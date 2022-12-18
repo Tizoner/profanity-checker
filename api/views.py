@@ -301,3 +301,26 @@ class SiteViewSet(viewsets.ViewSet):
         url = query_param(request, Site.url.field)
         site = get_object_or_404(Site, url=url)
         return Response(SiteSerializer(site).data, status.HTTP_200_OK)
+
+    def sites(self, request):
+        contains_profanity, last_check_after, last_status_update_after = query_params(
+            request,
+            (
+                Site.contains_profanity.field,
+                (Site.last_check_time.field, "last_check_after"),
+                (Site.last_status_update_time.field, "last_status_update_after"),
+            ),
+        )
+        sites = Site.objects.all()
+        if last_check_after is None and last_status_update_after is None:
+            if contains_profanity is not None:
+                sites = sites.filter(contains_profanity=contains_profanity)
+            sites = cache.get_or_set(contains_profanity, sites)
+        else:
+            if last_check_after is not None:
+                sites = sites.filter(last_check_time__gt=last_check_after)
+            if last_status_update_after is not None:
+                sites = sites.filter(
+                    last_status_update_time__gt=last_status_update_after
+                )
+        return Response(SiteSerializer(sites, many=True).data, status.HTTP_200_OK)
