@@ -75,3 +75,15 @@ def query_params(request, fields: Iterable, required=False):
 def check_unknown_params(params):
     if params:
         raise ValidationError([f"Unknown parameter '{param}'." for param in params])
+
+
+def median_datetime(queryset, term):
+    try:
+        count = queryset.count()
+    except:
+        count = 0
+    if count == 0:
+        datetime = timezone.now()
+    else:
+        datetime = queryset.values_list(term, flat=True).order_by(term)[count // 2]
+    return timezone.localtime(datetime).strftime(settings.DATETIME_FORMAT)

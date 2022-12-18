@@ -1,4 +1,5 @@
 import concurrent
+from datetime import datetime
 from os import cpu_count
 from urllib.error import URLError
 from urllib.parse import quote
@@ -27,7 +28,7 @@ from rest_framework.response import Response
 
 from .models import Site
 from .serializers import SiteSerializer
-from .utils import detail, split_quoted_text
+from .utils import detail, median_datetime, query_param, query_params, split_quoted_text
 
 
 class SiteViewSet(viewsets.ViewSet):
@@ -302,6 +303,87 @@ class SiteViewSet(viewsets.ViewSet):
         site = get_object_or_404(Site, url=url)
         return Response(SiteSerializer(site).data, status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="retrieve stored information about sites",
+        responses={
+            status.HTTP_200_OK: OpenApiResponse(
+                response=SiteSerializer(many=True),
+                description="Successfully retrieved information about sites",
+                examples=[
+                    OpenApiExample(
+                        name="Retrieved information",
+                        value=SiteSerializer(
+                            Site(
+                                url="https://www.purgomalum.com/index.html",
+                                contains_profanity=False,
+                            )
+                        ).data,
+                    )
+                ],
+            ),
+            status.HTTP_400_BAD_REQUEST: OpenApiResponse(
+                response=build_object_type(detail(build_basic_type(str))),
+                description="One of the parameters was blank, invalid, or unknown parameters were provided",
+                examples=[
+                    OpenApiExample(
+                        name="Blank parameter",
+                        value=detail(
+                            "Parameter “contains_profanity” must not be blank."
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Invalid Parameter",
+                        value=detail("“Fals” value must be either True or False."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Unknown parameters",
+                        value=detail(
+                            ["Unknown parameter “a”.", "Unknown parameter “b”."]
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                ],
+            ),
+        },
+        parameters=[
+            OpenApiParameter(
+                name="contains_profanity",
+                description="Filter sites based on concrete value of __contains_profanity__ field",
+                type=bool,
+                examples=[
+                    OpenApiExample(name="Sites containing profanity", value="true"),
+                    OpenApiExample(
+                        name="Sites not containing profanity", value="false"
+                    ),
+                    OpenApiExample(name="Do not apply filter"),
+                ],
+            ),
+            OpenApiParameter(
+                name="last_check_after",
+                description="Filter sites __last checked__ after specific date and time",
+                type=datetime,
+                examples=[
+                    OpenApiExample(
+                        name="Example parameter value",
+                        value=median_datetime(Site.objects, "last_check_time"),
+                    )
+                ],
+            ),
+            OpenApiParameter(
+                name="last_status_update_after",
+                description="Filter sites having __last status update__ after specific date and time",
+                type=datetime,
+                examples=[
+                    OpenApiExample(
+                        name="Example parameter value",
+                        value=median_datetime(Site.objects, "last_status_update_time"),
+                    )
+                ],
+            ),
+        ],
+    )
     def sites(self, request):
         contains_profanity, last_check_after, last_status_update_after = query_params(
             request,
