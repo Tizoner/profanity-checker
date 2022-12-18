@@ -3,3 +3,4 @@ psycopg2-binary
 tzdata
 django-environ
 djangorestframework
+drf_spectacular

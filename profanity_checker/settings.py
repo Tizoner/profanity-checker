@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "api.apps.ApiConfig",
     "rest_framework",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -118,6 +119,26 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DATETIME_FORMAT": DATETIME_FORMAT,
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Profanity Checker",
+    "DESCRIPTION": "<b>REST</b>ful __API__ that can tell whether a site contains profanity<br><br>Internally makes use of third-party RESTful API <a style='text-decoration:none' href='https://www.purgomalum.com'>PurgoMalum</a><br><br>Intended for checking sites that contain English text and not require authentication",
+    "VERSION": "1",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "docExpansion": "full",
+        "filter": True,
+        "displayRequestDuration": True,
+        "showCommonExtensions": True,
+        "useUnsafeMarkdown": True,
+        "tryItOutEnabled": True,
+        "requestSnippetsEnabled": True,
+        "requestSnippets": {"defaultExpanded": False},
+        "defaultModelExpandDepth": 4,
+        "defaultModelsExpandDepth": 3,
+        "syntaxHighlight.theme": "monokai",
+    },
 }
 
 if DEBUG:
