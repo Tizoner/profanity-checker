@@ -204,6 +204,99 @@ class SiteViewSet(viewsets.ViewSet):
         cache.delete_many((None, json))
         return Response(json, status_code)
 
+    @extend_schema(
+        summary="retrieve stored information about site",
+        responses={
+            status.HTTP_200_OK: OpenApiResponse(
+                response=SiteSerializer,
+                description="Successfully retrieved information about site",
+                examples=[
+                    OpenApiExample(
+                        name="Retrieved information",
+                        value=SiteSerializer(
+                            Site(
+                                url="https://www.purgomalum.com/profanitylist.html",
+                                contains_profanity=True,
+                            )
+                        ).data,
+                    )
+                ],
+            ),
+            status.HTTP_400_BAD_REQUEST: OpenApiResponse(
+                response=dict(
+                    oneOf=dict(
+                        detail=build_basic_type(str),
+                        details=build_array_type(build_basic_type(str), min_length=2),
+                    )
+                ),
+                description="Site URL was missing, blank, invalid, or unknown parameters were provided",
+                examples=[
+                    OpenApiExample(
+                        name="Missing URL",
+                        value=detail("Parameter “url” is required."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Blank URL",
+                        value=detail("Parameter “url” must not be blank."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Invalid URL",
+                        value=detail(
+                            [
+                                "Enter a valid URL.",
+                                "Ensure this value has at most 2000 characters (it has 2022).",
+                            ]
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Unknown parameters",
+                        value=detail(
+                            ["Unknown parameter “a”.", "Unknown parameter “b”."]
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                ],
+            ),
+            status.HTTP_404_NOT_FOUND: OpenApiResponse(
+                response=build_object_type(detail(build_basic_type(str))),
+                description="No stored information is associated with the given URL",
+                examples=[
+                    OpenApiExample(
+                        name="Unknown URL",
+                        value=detail("Not found."),
+                        status_codes=[status.HTTP_404_NOT_FOUND],
+                    )
+                ],
+            ),
+        },
+        parameters=[
+            OpenApiParameter(
+                name="url",
+                description="Site URL",
+                required=True,
+                type=dict(
+                    type="string", format="uri", maxLength=Site.url.field.max_length
+                ),
+                examples=[
+                    OpenApiExample(
+                        name="Nonexistent site URL", value="https://www.purgomalum"
+                    ),
+                    OpenApiExample(name="Invalid site URL", value="https://asdf"),
+                    OpenApiExample(
+                        name="URL of site containing profanity",
+                        value="https://github.com/public-apis/public-apis",
+                    ),
+                    OpenApiExample(
+                        name="URL of site not containing profanity",
+                        value="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment",
+                    ),
+                ],
+            )
+        ],
+    )
     def site(self, request):
         url = query_param(request, Site.url.field)
         site = get_object_or_404(Site, url=url)
