@@ -6,6 +6,18 @@ from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup
 from django.utils import timezone
+from drf_spectacular.plumbing import (
+    build_array_type,
+    build_basic_type,
+    build_object_type,
+)
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+)
 from requests.exceptions import ReadTimeout
 from requests_futures.sessions import FuturesSession
 from rest_framework import status, viewsets
@@ -17,6 +29,119 @@ from .utils import detail, split_quoted_text
 
 
 class SiteViewSet(viewsets.ViewSet):
+    @extend_schema(
+        summary="check site for profanity",
+        responses={
+            status.HTTP_200_OK: OpenApiResponse(
+                response=bool,
+                description="Successfully checked site for profanity",
+                examples=[
+                    OpenApiExample(name="Site contains profanity", value="true"),
+                    OpenApiExample(
+                        name="Site does not contain profanity", value="false"
+                    ),
+                ],
+            ),
+            status.HTTP_400_BAD_REQUEST: OpenApiResponse(
+                response=dict(
+                    oneOf=dict(
+                        detail=build_basic_type(str),
+                        details=build_array_type(build_basic_type(str), min_length=2),
+                    )
+                ),
+                description="Site URL was missing, blank, invalid, not resolving, or unknown parameters were provided",
+                examples=[
+                    OpenApiExample(
+                        name="Missing URL",
+                        value=detail("Parameter “url” is required."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Blank URL",
+                        value=detail("Parameter “url” must not be blank."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Invalid URL",
+                        value=detail(
+                            [
+                                "Enter a valid URL.",
+                                "Ensure this value has at most 2000 characters (it has 2022).",
+                            ]
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Nonexistent URL",
+                        value=detail("Could not resolve URL."),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                    OpenApiExample(
+                        name="Unknown parameters",
+                        value=detail(
+                            ["Unknown parameter “a”.", "Unknown parameter “b”."]
+                        ),
+                        status_codes=[status.HTTP_400_BAD_REQUEST],
+                    ),
+                ],
+            ),
+            status.HTTP_502_BAD_GATEWAY: OpenApiResponse(
+                response=build_object_type(detail(build_basic_type(str))),
+                description="One of the requests to third-party API failed",
+                examples=[
+                    OpenApiExample(
+                        name="External service unavailable",
+                        value=detail(
+                            "Request to third-party API failed with status code 503."
+                        ),
+                        status_codes=[status.HTTP_502_BAD_GATEWAY],
+                    ),
+                    OpenApiExample(
+                        name="External server error",
+                        value=detail(
+                            "Request to third-party API failed with status code 500."
+                        ),
+                        status_codes=[status.HTTP_502_BAD_GATEWAY],
+                    ),
+                ],
+            ),
+            status.HTTP_504_GATEWAY_TIMEOUT: OpenApiResponse(
+                response=build_object_type(detail(build_basic_type(str))),
+                description="One of the requests to third-party API timed out",
+                examples=[
+                    OpenApiExample(
+                        name="Request timeout passed",
+                        value=detail("Request to third-party API timed out."),
+                        status_codes=[status.HTTP_504_GATEWAY_TIMEOUT],
+                    )
+                ],
+            ),
+        },
+        parameters=[
+            OpenApiParameter(
+                name="url",
+                description="Site URL",
+                required=True,
+                type=dict(
+                    type="string", format="uri", maxLength=Site.url.field.max_length
+                ),
+                examples=[
+                    OpenApiExample(
+                        name="URL of site containing profanity",
+                        value="https://github.com/public-apis/public-apis",
+                    ),
+                    OpenApiExample(
+                        name="URL of site not containing profanity",
+                        value="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment",
+                    ),
+                    OpenApiExample(name="Invalid site URL", value="https://asdf"),
+                    OpenApiExample(
+                        name="Nonexistent site URL", value="https://www.purgomalum"
+                    ),
+                ],
+            )
+        ],
+    )
     def check(self, request):
         url = query_param(request, Site.url.field)
         request = Request(url, headers={"User-Agent": "Magic Browser"})
