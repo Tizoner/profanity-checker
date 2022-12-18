@@ -394,9 +394,9 @@ class SiteViewSet(viewsets.ViewSet):
             ),
         )
         sites = Site.objects.all()
+        if contains_profanity is not None:
+            sites = sites.filter(contains_profanity=contains_profanity)
         if last_check_after is None and last_status_update_after is None:
-            if contains_profanity is not None:
-                sites = sites.filter(contains_profanity=contains_profanity)
             sites = cache.get_or_set(contains_profanity, sites)
         else:
             if last_check_after is not None:
