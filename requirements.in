@@ -8,3 +8,4 @@ beautifulsoup4
 requests-futures
 django-redis
 hiredis
+whitenoise
