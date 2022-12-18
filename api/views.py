@@ -22,6 +22,7 @@ from drf_spectacular.utils import (
 from requests.exceptions import ReadTimeout
 from requests_futures.sessions import FuturesSession
 from rest_framework import status, viewsets
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from .models import Site
@@ -202,3 +203,8 @@ class SiteViewSet(viewsets.ViewSet):
             Site(url=url, contains_profanity=json).save(force_insert=True)
         cache.delete_many((None, json))
         return Response(json, status_code)
+
+    def site(self, request):
+        url = query_param(request, Site.url.field)
+        site = get_object_or_404(Site, url=url)
+        return Response(SiteSerializer(site).data, status.HTTP_200_OK)
