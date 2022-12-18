@@ -3,9 +3,12 @@
 import os
 import sys
 
+from environ import Env
+
 
 def main():
     """Run administrative tasks."""
+    Env.read_env()
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "profanity_checker.settings")
     try:
         from django.core.management import execute_from_command_line
