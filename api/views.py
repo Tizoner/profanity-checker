@@ -5,6 +5,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from bs4 import BeautifulSoup
+from django.core.cache import cache
 from django.utils import timezone
 from drf_spectacular.plumbing import (
     build_array_type,
@@ -199,4 +200,5 @@ class SiteViewSet(viewsets.ViewSet):
             site.save(update_fields=update_fields)
         except Site.DoesNotExist:
             Site(url=url, contains_profanity=json).save(force_insert=True)
+        cache.delete_many((None, json))
         return Response(json, status_code)

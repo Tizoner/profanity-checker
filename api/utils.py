@@ -23,3 +23,55 @@ def custom_exception_handler(exception, context):
     if isinstance(exception, ValidationError):
         return Response(detail(exception.messages), status.HTTP_400_BAD_REQUEST)
     return exception_handler(exception, context)
+
+
+def split_quoted_text(text, max_split_len=16352):
+    start, end = 0, max_split_len
+    while end < len(text):
+        index = text.rfind("%", start, end)
+        if index > 0:
+            end = index
+        yield text[start:end]
+        start = end
+        end += max_split_len
+    yield text[start:end]
+
+
+def query_param(
+    request, field, param_name=None, required=True, handle_unknown_params=True
+):
+    if param_name is None:
+        param_name = field.name
+    if handle_unknown_params:
+        check_unknown_params(request.query_params.keys() - (param_name,))
+    if not required and param_name not in request.query_params:
+        return
+    param = request.query_params[param_name]
+    if len(param) == 0:
+        raise ValidationError(f"Parameter '{param_name}' must not be blank.")
+    field.run_validators(param)
+    if isinstance(field, BooleanField):
+        param = param.capitalize()
+    param = field.to_python(param)
+    if isinstance(field, DateTimeField):
+        param = timezone.localtime(timezone.make_aware(param), timezone=utc)
+    return param
+
+
+def query_params(request, fields: Iterable, required=False):
+    remained_params = set(request.query_params.keys())
+    for field in fields:
+        if isinstance(field, Sequence):
+            field, param_name = field
+        else:
+            param_name = field.name
+        yield query_param(
+            request, field, param_name, required, handle_unknown_params=False
+        )
+        remained_params.discard(param_name)
+    check_unknown_params(remained_params)
+
+
+def check_unknown_params(params):
+    if params:
+        raise ValidationError([f"Unknown parameter '{param}'." for param in params])

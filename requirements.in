@@ -6,3 +6,5 @@ djangorestframework
 drf-spectacular
 beautifulsoup4
 requests-futures
+django-redis
+hiredis
