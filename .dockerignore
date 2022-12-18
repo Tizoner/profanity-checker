@@ -1,0 +1,8 @@
+**/*.pyc
+**/__pycache__
+venv
+Dockerfile
+*.*
+!requirements.txt
+!manage.py
+!.env
