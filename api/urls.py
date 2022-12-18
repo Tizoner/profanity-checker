@@ -16,7 +16,8 @@ urlpatterns = [
                             path("swagger-ui/", SpectacularSwaggerView.as_view()),
                         ]
                     ),
-                )
+                ),
+                path("check", SiteViewSet.as_view({"get": "check"})),
             ]
         ),
     )

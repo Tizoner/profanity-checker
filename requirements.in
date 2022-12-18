@@ -3,4 +3,6 @@ psycopg2-binary
 tzdata
 django-environ
 djangorestframework
-drf_spectacular
+drf-spectacular
+beautifulsoup4
+requests-futures
