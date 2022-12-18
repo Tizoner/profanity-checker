@@ -174,4 +174,3 @@ else:
         "rest_framework.renderers.JSONRenderer"
     ]
     ALLOWED_HOSTS = ["127.0.0.1", "profanity-checker.onrender.com"]
-    ALLOWED_HOSTS = ["127.0.0.1", "profanity-checker.onrender.com"]
