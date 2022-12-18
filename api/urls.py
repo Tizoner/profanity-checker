@@ -18,6 +18,15 @@ urlpatterns = [
                     ),
                 ),
                 path("check", SiteViewSet.as_view({"get": "check"})),
+                path(
+                    "site",
+                    include(
+                        [
+                            path("", SiteViewSet.as_view({"get": "site"})),
+                            path("s", SiteViewSet.as_view({"get": "sites"})),
+                        ]
+                    ),
+                ),
             ]
         ),
     )
