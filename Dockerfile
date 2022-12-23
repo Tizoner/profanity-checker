@@ -4,7 +4,7 @@ WORKDIR /opt/app
 COPY . .
 RUN pip install --upgrade pip \
   && apk add --no-cache gcc musl-dev \
-  && pip install -r requirements.txt \
+  && pip install --no-cache-dir -r requirements.txt \
   && rm requirements.txt \
   && apk del --purge gcc musl-dev apk-tools\
   && python manage.py collectstatic --no-input
