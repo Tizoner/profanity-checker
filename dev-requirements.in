@@ -1,4 +1,3 @@
 -c requirements.txt
 pylint
 pylint-django
-django-debug-toolbar
