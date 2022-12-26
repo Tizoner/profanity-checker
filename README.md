@@ -1,6 +1,6 @@
 <h1 align="center">Profanity Checker</h1>
 
-## Technologies used
+## Technologies Used
 - [Python](https://www.python.org) &nbsp;`3.10`
 - [Django](https://www.djangoproject.com) &nbsp;`4.1`
 - [DRF](https://www.django-rest-framework.org) &nbsp;`3.14`
