@@ -353,11 +353,11 @@ class SiteViewSet(viewsets.ViewSet):
                 description="Filter sites based on concrete value of __contains_profanity__ field",
                 type=bool,
                 examples=[
+                    OpenApiExample(name="No parameter"),
                     OpenApiExample(name="Sites containing profanity", value="true"),
                     OpenApiExample(
                         name="Sites not containing profanity", value="false"
                     ),
-                    OpenApiExample(name="Do not apply filter"),
                 ],
             ),
             OpenApiParameter(
@@ -365,10 +365,11 @@ class SiteViewSet(viewsets.ViewSet):
                 description="Filter sites __last checked__ after specific date and time",
                 type=datetime,
                 examples=[
+                    OpenApiExample(name="No parameter"),
                     OpenApiExample(
                         name="Example parameter value",
                         value=median_datetime(Site.objects, "last_check_time"),
-                    )
+                    ),
                 ],
             ),
             OpenApiParameter(
@@ -376,10 +377,11 @@ class SiteViewSet(viewsets.ViewSet):
                 description="Filter sites having __last status update__ after specific date and time",
                 type=datetime,
                 examples=[
+                    OpenApiExample(name="No parameter"),
                     OpenApiExample(
                         name="Example parameter value",
                         value=median_datetime(Site.objects, "last_status_update_time"),
-                    )
+                    ),
                 ],
             ),
         ],
