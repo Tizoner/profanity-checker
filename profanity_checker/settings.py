@@ -174,3 +174,4 @@ else:
         "rest_framework.renderers.JSONRenderer"
     ]
     ALLOWED_HOSTS = ["127.0.0.1", "localhost", "profanity-checker.onrender.com"]
+    CSRF_TRUSTED_ORIGINS = ["https://*." + domain for domain in ALLOWED_HOSTS]
