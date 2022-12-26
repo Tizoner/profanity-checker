@@ -173,4 +173,4 @@ else:
     REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
         "rest_framework.renderers.JSONRenderer"
     ]
-    ALLOWED_HOSTS = ["127.0.0.1", "profanity-checker.onrender.com"]
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "profanity-checker.onrender.com"]

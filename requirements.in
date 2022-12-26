@@ -1,5 +1,5 @@
 django
-psycopg2-binary
+psycopg2
 tzdata
 django-environ
 djangorestframework
@@ -9,3 +9,4 @@ requests-futures
 django-redis
 hiredis
 whitenoise
+django-debug-toolbar
