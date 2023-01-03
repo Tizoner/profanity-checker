@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, DateTimeField
 from django.utils import timezone
 from django.utils.datastructures import MultiValueDictKeyError
-from pytz import utc
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
@@ -58,7 +57,7 @@ def query_param(
         param = param.capitalize()
     param = field.to_python(param)
     if isinstance(field, DateTimeField):
-        param = timezone.localtime(timezone.make_aware(param), timezone=utc)
+        param = timezone.localtime(timezone.make_aware(param), timezone=timezone.utc)
     return param
 
 
@@ -91,4 +90,3 @@ def median_datetime(queryset, term):
     else:
         datetime = queryset.values_list(term, flat=True).order_by(term)[count // 2]
     return timezone.localtime(datetime).strftime(settings.DATETIME_FORMAT)
-    
