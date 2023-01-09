@@ -28,7 +28,7 @@ class PrintableModel(models.Model):
 
 class Site(PrintableModel):
     url = models.URLField(primary_key=True, max_length=2000)
-    contains_profanity = models.BooleanField(serialize=True)
+    contains_profanity = models.BooleanField()
     last_check_time = models.DateTimeField(default=timezone.now)
     last_status_update_time = models.DateTimeField(default=timezone.now)
 
