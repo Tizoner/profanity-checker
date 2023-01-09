@@ -1,6 +1,5 @@
 from collections.abc import Iterable, Sequence
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, DateTimeField
 from django.utils import timezone
@@ -57,7 +56,7 @@ def query_param(
         param = param.capitalize()
     param = field.to_python(param)
     if isinstance(field, DateTimeField):
-        param = timezone.localtime(timezone.make_aware(param), timezone=timezone.utc)
+        param = timezone.localtime(param, timezone=timezone.utc)
     return param
 
 
@@ -89,4 +88,4 @@ def median_datetime(queryset, term):
         datetime = timezone.now()
     else:
         datetime = queryset.values_list(term, flat=True).order_by(term)[count // 2]
-    return timezone.localtime(datetime).strftime(settings.DATETIME_FORMAT)
+    return timezone.localtime(datetime)

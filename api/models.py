@@ -1,7 +1,6 @@
 from itertools import chain
 from json import dumps
 
-from django.conf import settings
 from django.db import models
 from django.db.models import DateTimeField
 from django.utils import timezone
@@ -9,7 +8,7 @@ from django.utils import timezone
 
 class PrintableModel(models.Model):
     def __repr__(self):
-        return dumps(self.to_dict(), indent=4)
+        return dumps(self.to_dict(), indent=4, default=str)
 
     def to_dict(self):
         options = self._meta
@@ -17,7 +16,7 @@ class PrintableModel(models.Model):
         for field in chain(options.concrete_fields, options.private_fields):
             value = field.value_from_object(self)
             if isinstance(field, DateTimeField):
-                value = timezone.localtime(value).strftime(settings.DATETIME_FORMAT)
+                value = timezone.localtime(value)
             data[field.name] = value
         for field in options.many_to_many:
             data[field.name] = [i.id for i in field.value_from_object(self)]

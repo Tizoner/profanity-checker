@@ -129,14 +129,11 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "api.utils.custom_exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DATETIME_FORMAT": DATETIME_FORMAT,
 }
 
 SPECTACULAR_SETTINGS = {
