@@ -12,7 +12,7 @@ from rest_framework.views import exception_handler
 
 def serialize_object(object):
     if isinstance(object, datetime):
-        return object.isoformat()
+        return timezone.localtime(object).isoformat()
     else:
         return str(object)
 
