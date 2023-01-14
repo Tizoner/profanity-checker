@@ -1,4 +1,5 @@
 from collections.abc import Iterable, Sequence
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, DateTimeField
@@ -7,6 +8,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
+
+
+def serialize_object(object):
+    if isinstance(object, datetime):
+        return object.isoformat()
+    else:
+        return str(object)
 
 
 def detail(arg):

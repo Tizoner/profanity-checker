@@ -5,10 +5,12 @@ from django.db import models
 from django.db.models import DateTimeField
 from django.utils import timezone
 
+from api.utils import serialize_object
+
 
 class BaseModel(models.Model):
     def __repr__(self):
-        return dumps(self.to_dict(), indent=4, default=str)
+        return dumps(self.to_dict(), indent=4, default=serialize_object)
 
     def to_dict(self):
         data = {}
