@@ -134,6 +134,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_RENDERER_CLASSES": ["drf_ujson.renderers.UJSONRenderer"],
 }
 
 SPECTACULAR_SETTINGS = {
@@ -164,11 +165,11 @@ if DEBUG:
         "127.0.0.1",
         "10.0.2.2",
     ]
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"].append(
+        "rest_framework.renderers.BrowsableAPIRenderer"
+    )
 else:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
-        "rest_framework.renderers.JSONRenderer"
-    ]
     ALLOWED_HOSTS = ["127.0.0.1", "localhost", "profanity-checker.onrender.com"]
     CSRF_TRUSTED_ORIGINS = ["https://*." + domain for domain in ALLOWED_HOSTS]

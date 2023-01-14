@@ -10,3 +10,4 @@ django-redis
 hiredis
 whitenoise
 django-debug-toolbar
+drf-ujson2
