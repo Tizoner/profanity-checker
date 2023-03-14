@@ -11,4 +11,6 @@ RUN pip install --upgrade pip \
   && python manage.py collectstatic --no-input
 
 EXPOSE 10000
-CMD python manage.py runserver --noreload 0.0.0.0:10000
+CMD python manage.py migrate \
+  && (python manage.py createsuperuser --no-input || :) \
+  && python manage.py runserver --noreload 0.0.0.0:10000
