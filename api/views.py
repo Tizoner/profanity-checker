@@ -189,6 +189,7 @@ class SiteViewSet(viewsets.ViewSet):
         try:
             update_fields = [Site.last_check_time.field.name]
             site = Site.objects.get(url=url)
+            site.last_check_time = timezone.now()
             if site.contains_profanity != json:
                 site.contains_profanity = json
                 site.last_status_update_time = timezone.now()
